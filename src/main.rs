@@ -9,8 +9,12 @@ use bson::{Bson};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Date{
-    code: String,
-    name: String,
+    gameid: String,
+    players: String,
+    winner:  String,
+    gamename:  String,
+    queue:  String,
+    fecha:  String,
 }
 
 #[get("/hello/{name}")]
@@ -28,18 +32,18 @@ async fn get_country_list()  -> impl Responder {
     let mut vec:Vec<Date> = Vec::new();
 
     // CREO LA CONEXION CON EL SERVER
-    let client = Client::with_uri_str("mongodb://localhost:27017").unwrap();
+    let client = Client::with_uri_str("mongodb://admin:pass123@34.125.197.46:27017").unwrap();
     // OBTENGO LA BASE DE DATOS
-    let db = client.database("getData");
-    let coll= db.collection::<Date>("information"); 
+    let db = client.database("SO1_Proyecto1_Fase2");
+    let coll= db.collection::<Date>("Game_Logs"); 
     let cursor = coll.find(None, None).unwrap();
 
     //vec.push(Date{code: "MY".to_string(), name: "Malaysia".to_string(), Ver:"holi".to_string()});
     for result in cursor{
-        if let Ok(item) = result{
+        /*if let Ok(item) = result{
             vec.push(item);
-        }
-        //println!("{:?}",result);
+        }*/
+        println!("{:?}",result);
     }
  
     //vec.push(Country{country_code: "PH".to_string(), country_name: "Philippines".to_string()});
@@ -66,7 +70,7 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-fn build_data(
+/*fn build_data(
     code: String,
     name: String,
 ) -> Date {
@@ -76,7 +80,7 @@ fn build_data(
     }
 }
 
-/*fn user_from_document(document: Document) -> Date {
+fn user_from_document(document: Document) -> Date {
     let mut _first_name = "".to_string();
     let mut _last_name = "".to_string();
     let mut _email = "".to_string();
