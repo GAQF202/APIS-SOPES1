@@ -4,13 +4,14 @@ use mongodb::{
 };
 
 use serde::{Deserialize, Serialize};
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_cors::Cors;
+use actix_web::{get, web, App, HttpServer, Responder, http};
 use bson::{Bson};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Date{
-    gameid: String,
-    players: String,
+    gameid: i64,
+    players: i64,
     winner:  String,
     gamename:  String,
     queue:  String,
@@ -40,10 +41,10 @@ async fn get_country_list()  -> impl Responder {
 
     //vec.push(Date{code: "MY".to_string(), name: "Malaysia".to_string(), Ver:"holi".to_string()});
     for result in cursor{
-        /*if let Ok(item) = result{
+        if let Ok(item) = result{
             vec.push(item);
-        }*/
-        println!("{:?}",result);
+        }
+        //println!("{:?}",result);
     }
  
     //vec.push(Country{country_code: "PH".to_string(), country_name: "Philippines".to_string()});
@@ -61,7 +62,16 @@ async fn main() -> std::io::Result<()> {
     }*/
     //println!("Hello, world!");
     HttpServer::new(|| {
+
+        let cors = Cors::default()//.supports_credentials() 
+                .allowed_origin("http://localhost:8080")
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                .allowed_header(http::header::CONTENT_TYPE)
+                .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .route("/hello", web::get().to(get_country_list))
             .service(greet)
     })
